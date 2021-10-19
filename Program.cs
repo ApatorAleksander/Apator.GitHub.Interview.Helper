@@ -1,29 +1,31 @@
-﻿using System;
+﻿using Octokit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Security.Cryptography;
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
 
 namespace Apator.GitHub.Interview.Helper
 {
     class Program
     {
-        private static readonly HttpClient client = new HttpClient();
-        public static async Task Main()
+        public static void Main()
         {
-            client.BaseAddress = new Uri("https://api.github.com/");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Bearer", "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"));
-            var response = await client.GetAsync("/licenses");
-            Console.WriteLine("Status code: ");
-            Console.WriteLine(response.StatusCode);
-            Console.WriteLine("Content: ");
-            string x = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(x);
+            Task.WaitAll(ExecuteAsync());
+        }
+
+        public static async Task ExecuteAsync()
+        {
+            IGithubClientService githubClientService = new GitHubClientService("ApatorAleksander","Apator.Interview");
+            await githubClientService.CreateNewRepositoryFromTemplate("Test");
+            await githubClientService.DeleteGitFiles($".gitignore", "Test");
         }
     }
 }
